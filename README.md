@@ -16,7 +16,7 @@
   - CurveBullet：基準軸を中心に回転しながら進む弾
   - SplitBullet：有効時間を迎えたときに別の弾幕を発動する弾
   - ChaseBullet：追尾弾
-  - FunnelBullet：基準軸を中心に回転しながら、一定距離で回転する弾
+  - FunnelBullet：基準軸を中心に一定距離で回転しながら、別の弾幕を発動する弾
 - Speed：弾のスピード
 - ValidTime：弾の有効時間
 - Damage：弾のダメージ量
