@@ -3,6 +3,6 @@
 弾のパラメータ、撃ち方のパラメータ、そしてその組み合わせからなる弾幕をScriptableObjectをベースにInspecter上で作成できるようにしたもの
 <br>
 
-## [使い方](./Documets/HowToUse.md)
+## [使い方](./Documents/HowToUse.md)
 
 ## [操作方法](./Documents/FlyCharacter.md)
