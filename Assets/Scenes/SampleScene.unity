@@ -695,7 +695,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1179699970}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: "Enemy(\u89AA)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6003,7 +6003,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4998483035227457327}
   m_Layer: 0
-  m_Name: Player
+  m_Name: "Player(\u89AA)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -27,7 +27,7 @@ namespace Barrage.Shot
 
         /*NormalShotのパラメータ*/
         /// <summary>
-        /// NormalBulletを撃つ際に適用される、拡散性がランダムかのFlag
+        /// NormalBulletを撃つ際に適用される、拡散性がランダムかのフラグ
         /// </summary>
         public bool RandomDiffusion; 
 
@@ -48,14 +48,19 @@ namespace Barrage.Shot
 
         /*GatherShotのパラメータ*/
         /// <summary>
-        /// GatherShotを撃つ際に適用される、発射位置を通過してその対称点まで有効にするかのFlag
+        /// ターゲットに対して集まるように撃つかのフラグ
         /// </summary>
-        public bool IsThrough;
+        public bool GatherAtTarget;
+
+        /// <summary>
+        /// GatherShotを撃つ際に適用される、発射位置を通過してその対称点まで有効にするかのフラグ
+        /// </summary>
+        public bool PassGatherPoint;
 
         /// <summary>
         /// IsThroughが有効の時、発射位置からどの程度離れて通過するか
         /// </summary>
-        public float Distance; 
+        public float DistanceFromGatherPoint; 
 
 
 

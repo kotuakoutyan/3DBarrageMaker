@@ -24,7 +24,7 @@ public class BulletDataEditor : Editor
         if (data.BulletType != BulletType.Funnel) data.ValidTime = Mathf.Max(0, EditorGUILayout.FloatField("ValidTime", data.ValidTime));
         else
         {
-            if (data.SplitData != default)
+            if (data.SplitData != default && data.SplitData.ShotDatas.Any())
             {
                 var validTime = data.SplitData.ShotDatas.Select(d => d.Cycle * d.Count + d.Delay).OrderByDescending(x => x).FirstOrDefault();
                 data.ValidTime = validTime;
@@ -32,6 +32,7 @@ public class BulletDataEditor : Editor
             }
             else EditorGUILayout.LabelField("ValidTime", "Split Data not set");
         }
+        EditorGUILayout.LabelField("Range", Mathf.CeilToInt(data.Speed * data.ValidTime).ToString());
         data.Damage = Mathf.Max(1, EditorGUILayout.IntField("Damage", data.Damage));
         EditorGUILayout.Separator();
 
@@ -45,41 +46,47 @@ public class BulletDataEditor : Editor
             EditorGUILayout.EndHorizontal();
 
             if (folding)
-            { 
+            {
                 EditorGUI.indentLevel++;
-                if (Size == -1)
-                {
-                    Initialize();
-                    for (int i = data.SplitData.ShotDatas.Count - 1; i >= 0; i--)
-                    {
-                        if (data.SplitData.ShotDatas[i] == default && data.SplitData.BulletDatas[i] == default) BothRemoveAt(i);
-                    }
-                    Size = EditorGUILayout.IntField("Size", data.SplitData.ShotDatas.Count);
-                }
+
+                if (data.SplitData == default) EditorGUILayout.LabelField("Split Data not set");
                 else
                 {
-                    Size = EditorGUILayout.IntField("Size", Size);
-                    for (int i = data.SplitData.ShotDatas.Count - 1; i >= Size; i--)
+                    if (Size == -1)
                     {
-                        BothRemoveAt(i);
+                        Initialize();
+                        for (int i = data.SplitData.ShotDatas.Count - 1; i >= 0; i--)
+                        {
+                            if (data.SplitData.ShotDatas[i] == default && data.SplitData.BulletDatas[i] == default) BothRemoveAt(i);
+                        }
+                        Size = EditorGUILayout.IntField("Size", data.SplitData.ShotDatas.Count);
+                    }
+                    else
+                    {
+                        for (int i = data.SplitData.ShotDatas.Count - 1; i >= Size; i--)
+                        {
+                            BothRemoveAt(i);
+                        }
+                        Size = EditorGUILayout.IntField("Size", Size);
+                    }
+                    // リスト表示
+                    EditorGUILayout.LabelField("ShotData / BulletData");
+                    for (int i = 0; i < Size; i++)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        if (i >= data.SplitData.ShotDatas.Count || i >= data.SplitData.BulletDatas.Count) BothAdd();
+                        if (data.SplitData.ShotDatas[i] != default) data.SplitData.ShotDatas[i] = EditorGUILayout.ObjectField(data.SplitData.ShotDatas[i], typeof(ShotData), false, GUILayout.MinWidth(100)) as ShotData;
+                        else data.SplitData.ShotDatas[i] = data.SplitData.ShotDatas[i] = EditorGUILayout.ObjectField(default, typeof(ShotData), false, GUILayout.MinWidth(100)) as ShotData;
+
+                        if (data.SplitData.BulletDatas[i] != default) data.SplitData.BulletDatas[i] = EditorGUILayout.ObjectField(data.SplitData.BulletDatas[i], typeof(BulletData), false, GUILayout.MinWidth(100)) as BulletData;
+                        else data.SplitData.BulletDatas[i] = EditorGUILayout.ObjectField(default, typeof(BulletData), false, GUILayout.MinWidth(100)) as BulletData;
+
+                        EditorGUILayout.EndHorizontal();
                     }
                 }
-                // リスト表示
-                EditorGUILayout.LabelField("ShotData / BulletData");
-                for (int i = 0; i < Size; i++)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    if (i >= data.SplitData.ShotDatas.Count || i >= data.SplitData.BulletDatas.Count) BothAdd();
-                    if (data.SplitData.ShotDatas[i] != default) data.SplitData.ShotDatas[i] = EditorGUILayout.ObjectField(data.SplitData.ShotDatas[i], typeof(ShotData), false, GUILayout.MinWidth(100)) as ShotData;
-                    else data.SplitData.ShotDatas[i] = data.SplitData.ShotDatas[i] = EditorGUILayout.ObjectField(default, typeof(ShotData), false, GUILayout.MinWidth(100)) as ShotData;
-
-                    if (data.SplitData.BulletDatas[i] != default) data.SplitData.BulletDatas[i] = EditorGUILayout.ObjectField(data.SplitData.BulletDatas[i], typeof(BulletData), false, GUILayout.MinWidth(100)) as BulletData;
-                    else data.SplitData.BulletDatas[i] = EditorGUILayout.ObjectField(default, typeof(BulletData), false, GUILayout.MinWidth(100)) as BulletData;
-
-                    EditorGUILayout.EndHorizontal();
-                }
-                EditorGUI.indentLevel--;
             }
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Separator();
         }
 
         if (data.BulletType == BulletType.Funnel)
@@ -104,8 +111,11 @@ public class BulletDataEditor : Editor
 
         void Initialize()
         {
-            while (data.SplitData.BulletDatas.Count > data.SplitData.ShotDatas.Count) data.SplitData.ShotDatas.Add(default);
-            while (data.SplitData.BulletDatas.Count < data.SplitData.ShotDatas.Count) data.SplitData.BulletDatas.Add(default);
+            if (data.SplitData != default)
+            {
+                while (data.SplitData.BulletDatas.Count > data.SplitData.ShotDatas.Count) data.SplitData.ShotDatas.Add(default);
+                while (data.SplitData.BulletDatas.Count < data.SplitData.ShotDatas.Count) data.SplitData.BulletDatas.Add(default);
+            }
         }
 
         void BothAdd()
@@ -114,8 +124,7 @@ public class BulletDataEditor : Editor
         }
         void BothRemoveAt(int num)
         {
-            data.SplitData.ShotDatas.RemoveAt(num);
-            data.SplitData.BulletDatas.RemoveAt(num);
+            data.SplitData.ShotDatas.RemoveAt(num); data.SplitData.BulletDatas.RemoveAt(num);
         }
     }
 

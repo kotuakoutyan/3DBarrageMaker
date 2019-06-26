@@ -20,7 +20,6 @@ public class InstanceColorSetter : MonoBehaviour
 
         props.SetColor(id, color);
         renderer.SetPropertyBlock(props);
-        //GetComponent<TrailRenderer>().startColor = color;
 
         renderer.material.EnableKeyword("_EMISSION");
 

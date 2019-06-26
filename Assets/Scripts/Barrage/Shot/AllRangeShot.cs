@@ -13,6 +13,7 @@ namespace Barrage.Shot
 
     public class AllRangeShot : NormalShot
     {
+        protected readonly float INITIALDISTANCE = 3.0f;
 
         /// <summary>
         /// 全方位に対して弾を複数打つメソッド
@@ -27,14 +28,21 @@ namespace Barrage.Shot
         /// <param name="angularSpeed">連射時に変化する角速度</param>
         /// <param name="axis">連射時に変化する基準軸</param>
         /// <param name="forward">発射方向(AllRangeShotType.Planeのみ有効)</param>
-        public void Shot(int bulletNum, AttackerType attackerType, Vector3 position, AllRangeShotShape shape, BulletType bulletType, BulletData data, GameObject target, float randomNum,  float time = 0.0f, float angularSpeed = 0.0f,  Vector3 axis = default, Vector3 forward = default)
+        public void Shot(int bulletNum, AttackerType attackerType, GameObject shooter, Vector3[] directions, BulletData data, GameObject target, float time = 0.0f, float angularSpeed = 0.0f, Vector3 axis = default)
         {
-            var bullets = ObjectPools.Instance.GetBullet(bulletNum, bulletType);
-            var directions = ShotManager.Instance.GetShotShape(shape, bulletNum, randomNum);
-            if (time != 0.0f && RotateByTime(shape)) directions = directions.Select(v => Quaternion.AngleAxis(time * angularSpeed, axis) * v).ToArray();
-            if (forward != default &&  RotateForDirection(shape)) for (int i = 0; i < bulletNum; i++) Shot(bullets[i], attackerType, position, directions[i].TransformDirection(forward), data, target);
-            else for (int i = 0; i < bulletNum; i++) Shot(bullets[i], attackerType, position, directions[i], data, target);
-            
+            var bullets = ObjectPools.Instance.GetBullet(bulletNum, data.BulletType);
+
+            if (data.BulletType == BulletType.Curve) SetRotateOrigin(bullets, shooter, data);
+            else if (data.BulletType == BulletType.Funnel) SetRotateOrigin(bullets, shooter, data, target);
+
+            if (directions == default) directions = ShotManager.Instance.RandomVectors(bulletNum);
+            if (time != 0.0f && angularSpeed != 0 && axis != default)
+            {
+                var rotate = Quaternion.AngleAxis(time * angularSpeed, axis);
+                for (int i = 0; i < bulletNum; i++) directions[i] = rotate * directions[i];
+            }
+            var position = shooter.transform.position;
+            for (int i = 0; i < bulletNum; i++) Shot(bullets[i], attackerType, position + directions[i] * INITIALDISTANCE, directions[i], data, target);
         }
     }
 }

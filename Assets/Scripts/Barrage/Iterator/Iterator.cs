@@ -11,7 +11,7 @@ namespace Barrage.Iterators
     /// </summary>
     public class Iterator : MonoBehaviour
     {
-        private float RandomNum; //何かしらに使えるそのIteratorごとに割り振った乱数
+        private float RandomNum;      //何かしらに使えるそのIteratorごとに割り振った乱数
 
         /// <summary>
         /// UnityActionとそのサイクル、期限を持たせたクラス
@@ -44,7 +44,6 @@ namespace Barrage.Iterators
             {
                 TotalTime += Time.deltaTime;
                 if (Timer > 0) Timer -= Time.deltaTime;
-
                 else
                 {
                     if (Count < 1) return true;
@@ -78,15 +77,16 @@ namespace Barrage.Iterators
         /// ShotDataをもとに生成したActionをIteratorにセット or 単発なら実行するメソッド
         /// </summary>
         /// <param name="data">発射するShotData</param>
-        public void SetUnityAction(AttackerType attackerType, BarrageData data, GameObject shooter, GameObject aim = default, GameObject target = default)
+        public void SetUnityAction(AttackerType attackerType, BarrageData data, GameObject aim = default, GameObject target = default)
         {
             if (data == null) return;
             for (int i = 0; i < data.ShotDatas.Count; i++)
             {
                 if (data.ShotDatas[i] == default || data.BulletDatas[i] == default) continue;
+                if (data.ShotDatas[i].ShotType == ShotType.Normal && data.BulletDatas[i].BulletType == BulletType.Funnel) continue;
                 var cnt = data.ShotDatas[i].Count;
-                if (cnt > 1) SetEvent(GetUnityAction(attackerType, data.ShotDatas[i], data.BulletDatas[i], target, shooter, aim), data.ShotDatas[i]);
-                else GetUnityAction(attackerType, data.ShotDatas[i], data.BulletDatas[i], target, shooter, aim)(0.0f);
+                if (cnt > 1) SetEvent(GetUnityAction(attackerType, data.ShotDatas[i], data.BulletDatas[i], aim, target), data.ShotDatas[i]);
+                else GetUnityAction(attackerType, data.ShotDatas[i], data.BulletDatas[i], aim, target)(0.0f);
             }
         }
 
@@ -95,20 +95,33 @@ namespace Barrage.Iterators
         /// </summary>
         /// <param name="shotData">発射するShotData</param>
         /// <returns></returns>
-        private UnityAction<float> GetUnityAction(AttackerType attackerType, ShotData shotData, BulletData bulletData, GameObject target, GameObject shooter, GameObject aim)
+        private UnityAction<float> GetUnityAction(AttackerType attackerType, ShotData shotData, BulletData bulletData, GameObject aim, GameObject target)
         {
-            // var position = @object.transform.position; //発射位置を固定したい場合はキャッシュしておく ※固定するとFunnelから出る弾の発射位置も移動しなくなるので注意
+            // var position = shooter.transform.position; //発射位置を固定したい場合はキャッシュしておく ※固定するとFunnelから出る弾の発射位置も移動しなくなるので注意
             var velocity = (aim == default) ? default : (aim.transform.position - transform.position).normalized;
+            Vector3[] directions = ShotManager.Instance.GetShotShape(shotData.AllRangeShotShape, shotData.GetBulletNum, RandomNum);
             switch (shotData.ShotType)
             {
                 case ShotType.Normal:
-                    return (t) => ShotManager.Instance.NormalShot.Shot(shotData.GetBulletNum, attackerType, transform.position, velocity, bulletData.BulletType, bulletData, target, shotData.RandomDiffusion, shotData.BulletShake);
+                    return (t) => ShotManager.Instance.NormalShot.Shot(shotData.GetBulletNum, attackerType, gameObject, bulletData.BulletType,
+                        bulletData, aim, target, shotData.RandomDiffusion, shotData.BulletShake);
+
                 case ShotType.AllRange:
-                    return (t) => ShotManager.Instance.AllRangeShot.Shot(shotData.GetBulletNum, attackerType, shooter.transform.position, shotData.AllRangeShotShape, bulletData.BulletType, bulletData, target, RandomNum, t,
-                        shotData.AngularSpeed, shotData.Axis, velocity);
+                    if (velocity != default && shotData.AllRangeShotShape == AllRangeShotShape.Plane)
+                    {
+                        for (int i = 0; i < shotData.BulletNum; i++) directions[i].TransformDirection(velocity);
+                    }
+                    return (t) => ShotManager.Instance.AllRangeShot.Shot(shotData.GetBulletNum, attackerType, gameObject, directions, bulletData, target, t,
+                        shotData.AngularSpeed, shotData.Axis);
+
                 case ShotType.Gather:
-                    return (t) => ShotManager.Instance.GatherShot.Shot(shotData.GetBulletNum, attackerType, shooter.transform.position, shotData.AllRangeShotShape, bulletData.BulletType, bulletData, RandomNum, t,
-                        shotData.AngularSpeed, shotData.Axis, shotData.IsThrough, shotData.Distance);
+                    var gatherAtTarget = target != default && shotData.GatherAtTarget;
+                    if (velocity != default && shotData.AllRangeShotShape == AllRangeShotShape.Plane)
+                    {
+                        for (int i = 0; i < shotData.BulletNum; i++) directions[i] = directions[i].TransformDirection(velocity);
+                    }
+                    return (t) => ShotManager.Instance.GatherShot.Shot(shotData.GetBulletNum, attackerType, gatherAtTarget ? target : gameObject, directions,
+                        bulletData, target, t, shotData.AngularSpeed, shotData.Axis, shotData.PassGatherPoint, shotData.DistanceFromGatherPoint);
                 default:
                     return default;
             }

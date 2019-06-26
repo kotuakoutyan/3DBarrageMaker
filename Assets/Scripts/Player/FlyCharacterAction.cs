@@ -27,10 +27,10 @@ namespace FlyCharacter
             Iterator = GetComponent<Iterator>();
         }
 
-        public void Attack1() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData1, gameObject, Aim, Status.Target);
-        public void Attack2() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData2, gameObject, Aim, Status.Target);
-        public void Attack3() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData3, gameObject, Aim, Status.Target);
-        public void Attack4() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData4, gameObject, Aim, Status.Target);
+        public void Attack1() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData1, Aim, Status.Target);
+        public void Attack2() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData2, Aim, Status.Target);
+        public void Attack3() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData3, Aim, Status.Target);
+        public void Attack4() => Iterator.SetUnityAction(Status.AttackerType, Status.BarrageData4, Aim, Status.Target);
 
 
     }

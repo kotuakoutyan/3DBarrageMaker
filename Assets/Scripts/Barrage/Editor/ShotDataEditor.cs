@@ -34,8 +34,9 @@ public class ShotDataEditor : Editor
 
         if(data.ShotType == ShotType.Gather)
         {
-            data.IsThrough = EditorGUILayout.Toggle("IsThrough", data.IsThrough);
-            if(data.IsThrough) data.Distance = Mathf.Max(0, EditorGUILayout.FloatField("ThroughDistance", data.Distance));
+            data.GatherAtTarget = EditorGUILayout.Toggle("GatherAtTarget", data.GatherAtTarget);
+            data.PassGatherPoint = EditorGUILayout.Toggle("PassGatherPoint", data.PassGatherPoint);
+            if(data.PassGatherPoint) data.DistanceFromGatherPoint = Mathf.Max(0, EditorGUILayout.FloatField("DistanceFromGatherPoint", data.DistanceFromGatherPoint));
             EditorGUILayout.Separator();
         }
         

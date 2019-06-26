@@ -6,23 +6,24 @@ namespace Barrage.Bullet
     [RequireComponent(typeof(SphereCollider))]
     abstract public class BaseBullet : MonoBehaviour, IAttacker
     {
+        protected Transform Transform;
+
         protected AttackerType AttackerType;
         protected Vector3 Velocity;
         protected float InitializeTime;
         protected BulletData Data;
         protected GameObject Target;
-        private TrailRenderer tr;
 
         public AttackerType GetAttackerType() => AttackerType;
- 
-        virtual protected void Start()
+
+        virtual protected void Awake()
         {
-            tr = GetComponent<TrailRenderer>();
+            Transform = this.transform;
         }
 
         protected void FixedUpdate()
         {
-            transform.localPosition += Velocity * Time.fixedDeltaTime;
+            Transform.localPosition += Velocity * Time.fixedDeltaTime;
             if (Time.time - InitializeTime > Data.ValidTime) ResetObject();
             AdditionalUpdate();
         }
@@ -58,18 +59,19 @@ namespace Barrage.Bullet
         /// </summary>
         virtual protected void ResetObject()
         {
-            tr.Clear();
+            var parent = GetComponentInParent<RotateOrigin>();
+            if (parent != null) parent.ResetObject();
             gameObject.SetActive(false);
         }
-        
+
         protected void OnTriggerEnter(Collider other)
         {
-            if (other.GetComponent<IDamageApplicable>() != null)
-            {
-                var direction = (transform.position - other.gameObject.transform.position).normalized;
-                var damage = new DamageData(this, Data.Damage, direction);
-                other.GetComponent<IDamageApplicable>().ApplyDamage(damage);
-            }
+            var enemy = other.GetComponent<IDamageApplicable>();
+            if (enemy == null || enemy.GetAttackerType() == AttackerType) return;
+
+            var direction = (transform.position - other.transform.position).normalized;
+            var damage = new DamageData(this, Data.Damage, direction);
+            other.GetComponent<IDamageApplicable>().ApplyDamage(damage);
         }
     }
 }

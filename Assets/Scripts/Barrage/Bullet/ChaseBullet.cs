@@ -23,7 +23,6 @@ namespace Barrage.Bullet
                 Velocity = Vector3.Slerp(Velocity, target_vec, Data.ChasePower * Time.fixedDeltaTime);
             }
         }
-
         public override void Initialize(AttackerType attackerType, Vector3 position, Vector3 velocity, BulletData data, GameObject target, Vector3 offset)
         {
             base.Initialize(attackerType, position, velocity, data, target, offset);

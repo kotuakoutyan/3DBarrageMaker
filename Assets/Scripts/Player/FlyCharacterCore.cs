@@ -2,6 +2,7 @@
 using UnityEngine;
 using UniRx.Triggers;
 using Damage;
+using Barrage.Bullet;
 
 namespace FlyCharacter
 {
@@ -42,8 +43,6 @@ namespace FlyCharacter
         
         public IReadOnlyReactiveProperty<bool> IsOnGround => isOnGround;
         private readonly ReactiveProperty<bool> isOnGround = new ReactiveProperty<bool>(false);
-        
-
         
         void Awake()
         {
@@ -106,6 +105,7 @@ namespace FlyCharacter
 
         [SerializeField] private float InvalidTimer;
         [SerializeField] readonly private float InvalidTime = 1.0f;
+        public AttackerType GetAttackerType() => Status.AttackerType;
         public void ApplyDamage(DamageData data)
         {
             if(InvalidTimer <= 0.0f && data.Attacker.GetAttackerType() != Status.AttackerType)

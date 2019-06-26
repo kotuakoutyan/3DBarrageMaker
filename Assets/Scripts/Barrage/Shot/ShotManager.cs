@@ -29,8 +29,6 @@ namespace Barrage.Shot
         {
             switch (shape)
             {
-                case AllRangeShotShape.Random:
-                    return RandomVectors(bulletNum);
                 case AllRangeShotShape.Plane:
                     return OrthogonalUnitVectors(bulletNum, randomNum);
                 case AllRangeShotShape.Tetrahedron:
@@ -54,7 +52,7 @@ namespace Barrage.Shot
                 case AllRangeShotShape.HighDensity50:
                     return HighDensity50;
                 default:
-                    return null;
+                    return default;
             }
         }
 
@@ -85,7 +83,7 @@ namespace Barrage.Shot
         private Vector3[] HighDensity50 = null;
 
 
-        private Vector3[] RandomVectors(int bulletNum)
+        public Vector3[] RandomVectors(int bulletNum)
         {
             var directions = new Vector3[bulletNum];
             for (int i = 0; i < bulletNum; i++) directions[i] = Random.onUnitSphere;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Barrage.Shot;
 using Barrage.Bullet;
+using System.Linq;
 
 namespace Barrage.ObjectPool
 {
@@ -19,19 +20,17 @@ namespace Barrage.ObjectPool
         }
             
         private ObjectPool<NormalBullet> NormalBulletPool = new ObjectPool<NormalBullet>();
-        private ObjectPool<CurveBullet> CurveBulletPool = new ObjectPool<CurveBullet>();
         private ObjectPool<SplitBullet> SplitBulletPool = new ObjectPool<SplitBullet>();
         private ObjectPool<ChaseBullet> ChaseBulletPool = new ObjectPool<ChaseBullet>();
         private ObjectPool<FunnelBullet> FunnelBulletPool = new ObjectPool<FunnelBullet>();
 
-        public List<BaseBullet> GetBullet(int num,  BulletType bulletType)
+        public BaseBullet[] GetBullet(int num,  BulletType bulletType)
         {
             switch (bulletType)
             {
                 case BulletType.Normal:
-                    return NormalBulletPool.GetBullet(num);
                 case BulletType.Curve:
-                    return CurveBulletPool.GetBullet(num);
+                    return NormalBulletPool.GetBullet(num);
                 case BulletType.Split:
                     return SplitBulletPool.GetBullet(num);
                 case BulletType.Chase:
@@ -68,30 +67,34 @@ namespace Barrage.ObjectPool
         /// <summary>
         /// 使用中でないBulletを探してListで返す
         /// </summary>
-        /// <param name="num">必要なBulletの数</param>
-        public List<BaseBullet> GetBullet(int num = 1)
+        /// <param name="requestNum">必要なBulletの数</param>
+        public BaseBullet[] GetBullet(int requestNum = 1)
         {
-            if (num < 1) return null;
+            if (requestNum < 1) return null;
 
-            var list = new List<BaseBullet>();
-            foreach (var obj in BulletList)
+            var array = new BaseBullet[requestNum];
+            var supplyNum = 0;
+            var bulletNum = BulletList.Count;
+            for (int i = 0;i < bulletNum; i++)
             {
-                if (obj.gameObject.activeSelf == false)
+                var bullet = BulletList[i];
+                if (bullet.gameObject.activeSelf == false)
                 {
-                    list.Add(obj);
-                    if (list.Count == num) return list;
+                    array[supplyNum] = bullet;
+                    supplyNum++;
+                    if (supplyNum == requestNum) return array;
                 }
             }
 
             // 全て使用中だったら新しく作って返す
-            while (list.Count < num)
+            while (supplyNum < requestNum)
             {
                 var newObj = CreateNewObject();
-                newObj.gameObject.SetActive(true);
                 BulletList.Add(newObj);
-                list.Add(newObj);
+                array[supplyNum] = newObj;
+                supplyNum++;
             }
-            return list;
+            return array;
         }
 
         /// <summary>

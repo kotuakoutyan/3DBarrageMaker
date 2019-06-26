@@ -32,9 +32,18 @@ namespace Barrage.Shot
         /// <param name="data">弾の基本データ</param>
         /// <param name="randomDiffusion">弾のブレをランダムにするFlag</param>
         /// <param name="bulletShake">弾のブレ(0.0-1.0)</param>
-        public void Shot(int bulletNum, AttackerType attackerType, Vector3 position, Vector3 velocity, BulletType bulletType, BulletData data, GameObject target, bool randomDiffusion, float bulletShake)
+        public void Shot(int bulletNum, AttackerType attackerType, GameObject shooter, BulletType bulletType, BulletData data, GameObject aim, GameObject target, bool randomDiffusion, float bulletShake)
         {
             var bullets = ObjectPools.Instance.GetBullet(bulletNum, bulletType);
+
+            Vector3 velocity = default;
+            if (aim != default) velocity = (aim.transform.position - shooter.transform.position).normalized;
+            else velocity = shooter.transform.forward;
+
+            if (data.BulletType == BulletType.Curve) SetRotateOrigin(bullets, shooter, data);
+            else if (data.BulletType == BulletType.Funnel) SetRotateOrigin(bullets, shooter, data, target);
+
+            var position = shooter.transform.position;
             if (randomDiffusion || bulletShake == default) foreach (BaseBullet bullet in bullets) Shot(bullet, attackerType, position, velocity.RandamShake(MAX_SHAKE * bulletShake), data, target);
             else
             {
@@ -74,6 +83,22 @@ namespace Barrage.Shot
                 velocitys[i] = direction * newDirection;
             }
             return velocitys;
+        }
+
+        /// <summary>
+        /// 回転する弾に対して、回転する親オブジェクトを設定するメソッド
+        /// </summary>
+        /// <param name="bullets"></param>
+        /// <param name="shooter"></param>
+        /// <param name="data"></param>
+        /// <param name="target"></param>
+        protected void SetRotateOrigin(BaseBullet[] bullets, GameObject shooter, BulletData data, GameObject target = default)
+        {
+            var origin = new GameObject().AddComponent<RotateOrigin>();
+            var transform = origin.transform;
+            origin.Initialize(shooter, data.AngularSpeed, data.Axis, target);
+
+            foreach (BaseBullet bullet in bullets) bullet.transform.SetParent(origin.transform);
         }
     }
 }

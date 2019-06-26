@@ -46,7 +46,8 @@ public class BarrageDataEditor : Editor
 
                 if (data.BulletDatas[i] != default) data.BulletDatas[i] = EditorGUILayout.ObjectField(data.BulletDatas[i], typeof(BulletData), false, GUILayout.MinWidth(100)) as BulletData;
                 else data.BulletDatas[i] = EditorGUILayout.ObjectField(default, typeof(BulletData), false, GUILayout.MinWidth(100)) as BulletData;
-                
+
+
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUI.indentLevel--;
