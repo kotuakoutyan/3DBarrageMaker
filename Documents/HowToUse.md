@@ -1,7 +1,7 @@
 ## 使い方
 ### 弾幕を作成する。
 下図のように、ProjectのCreateの作成用メニューからそれぞれ「BulletData」「ShotData」「BurrageData」を作成する.<br>
-![MakeScriptableObject.png](./MakeScriptableObject.png)
+![MakeScriptableObject.png](./Images/MakeScriptableObject.png)
 - [「BulletData」](./Bullet.md)：弾に関する設定
 - [「ShotData」](./Shot.md)：撃ち方に関する設定
 - [「BarrageData」](./Barrage.md)：弾と撃ち方の組み合わせに関する設定 <br>
