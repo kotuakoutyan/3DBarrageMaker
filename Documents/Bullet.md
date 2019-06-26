@@ -24,3 +24,21 @@
 #### ChaseBullet用のパラメータ
 - ChasePower：弾がターゲットを追尾する力
 - ChaseEnableTime：弾が追尾を開始するまでの時間
+
+***
+
+## パラメータ設定の例（FunnelBulletの場合）
+![SetBulletParameter.png](./Images/SetBulletParameter.png)<br>
+```
+上図の例では、
+・初速20m/s（回転による速度は考慮されていない）
+・有効時間は5s（FunnelBulletの場合、この項目は放つ弾幕に依存）
+・ダメージ量は1
+・Barrage Sentryという弾幕を放ちながら進行
+・Barrage Sentryは、「Shot Plane Shooting」と「Bullet Normal」によって構成（ここで編集可）
+・展開位置は自機から半径20mの位置
+・1sの時間をかけて展開位置に到達
+・角速度は60deg/s（初速とは依存関係にない）
+・回転軸はY軸
+```
+という設定をしている.<br>
