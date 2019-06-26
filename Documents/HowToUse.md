@@ -11,7 +11,7 @@
 ### ScriptableObjectにパラメータを設定する
 作成したScriptableObjectにInspecter上からパラメータを設定する.<br>
 #### 例）FunnelBulletのパラメータ <br>
-![SetBulletParameter.png](./SetBulletParameter.png)<br>
+![SetBulletParameter.png](./Images/SetBulletParameter.png)<br>
 ```
 上図の例では、
 ・初速20m/s（回転による速度は考慮されていない）
@@ -27,7 +27,7 @@
 という設定をしている.<br>
 
 #### 例）AllRangeShotのパラメータ<br>
-![SetShotParameter.png](./SetShotParameter.png)<br>
+![SetShotParameter.png](./Images/SetShotParameter.png)<br>
 ```
 上図の例では、
 ・撃ち方は全方位に対して放つ
@@ -39,7 +39,7 @@
 という設定をしている.
 
 #### 例）AllRange Crossのパラメータ<br>
-![SetBarrageParameter.png](./SetBarrageParameter.png)<br>
+![SetBarrageParameter.png](./Images/SetBarrageParameter.png)<br>
 ```
 上図の例では、
 ・6つの組み合わせを同時に発射する
@@ -48,7 +48,7 @@
 ***
 
 ### 作成した弾幕のセット
-Sampleでは Hierarchyの「Player(親)/Player」にアタッチされている「FlyCharacterStatus」 にInspecter上からBarrageDataを設定することで、ボタンを押したときにそれが呼ばれるようになっている。
-![SetBarrageData.png](./SetBarrageData.png)<br>
+Sampleでは Hierarchyの「Player(親)/Player」にアタッチされている「FlyCharacterStatus」 にInspecter上からBarrageDataを設定することで、ボタンを押したときにそれが呼ばれるようになっている.<br>
+![SetBarrageData.png](./Images/SetBarrageData.png)<br>
 
 ちなみに、敵に対しても同様にBarrageDataを設定してあるため、変更することが可能.
